@@ -4,7 +4,7 @@
 
 ---
 <p align="center">
-  <img src="./images/Network-home.png" width="60%"/>
+  <img src="./images/Network-home.png" width="80%"/>
 </p>
 
 <h1 align="center">Eladio Rivera</h1>
