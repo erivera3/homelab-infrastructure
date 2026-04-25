@@ -8,31 +8,31 @@
 
 This project documents the evolution of a self-built IT environment designed to simulate a small enterprise network supporting real users.
 
-The infrastructure evolved through solving real operational constraints:
+The infrastructure was developed by solving real-world constraints rather than following a predefined design:
 
-* ISP hardware limitations (MAC-locked router)
-* Power consumption and thermal inefficiency
-* Noise and environmental constraints
+* ISP router locked to a MAC address
+* High power consumption and thermal inefficiency from legacy hardware
 * Storage fragmentation and duplication
 * Networking and DNS complexity
-* Real-world deployment challenges
+* Real-world deployment and support challenges
 
-The current environment includes:
+The current environment supports ~13 active users and includes:
 
 * Proxmox virtualization (multiple hosts)
 * TrueNAS SCALE (ZFS storage)
 * Windows Server 2022 (Active Directory + DNS)
 * Ubuntu Server / Desktop
 * OPNsense firewall (virtualized)
-* Pi-hole DNS filtering (virtualized)
+* Pi-hole DNS filtering
 * OpenWRT edge router
 * Managed switching
 * Wireless Access Point (OpenWRT)
-* Real-world system deployment (~13 users)
 
 ---
 
 ## Engineering Approach
+
+All development followed a consistent pattern:
 
 **Problem → Investigation → Root Cause → Redesign → Outcome**
 
@@ -61,15 +61,17 @@ flowchart TD
 
     AP --> WiFiClients["Wireless Clients"]
 
-    %% Your VMs (THIS is what you wanted)
-    Proxmox --> DC01["Windows Server 2022 - AD DNS"]
+    Proxmox --> DC01["Windows Server 2022 (Domain Controller + AD DNS)"]
     Proxmox --> UbuntuServer["Ubuntu Server"]
     Proxmox --> UbuntuDesktop["Ubuntu Desktop"]
     Proxmox --> Win10["Windows 10 Client"]
 
-    %% Network services
     Clients -->|DHCP| OpenWRT
-    Clients -->|DNS| PiHole
+    Clients -->|DNS Query| PiHole
+    PiHole -->|Forward Internal| DC01
+    PiHole -->|Forward External| Internet
+
+    WiFiClients -->|DNS Query| PiHole
 ```
 
 ---
@@ -78,12 +80,12 @@ flowchart TD
 
 The ISP-provided router is locked to a MAC address and cannot be replaced.
 
-To regain control of the network:
+To regain control over the network:
 
-* An OpenWRT router was deployed behind the ISP device
-* OpenWRT provides DHCP and routing control
+* OpenWRT was deployed behind the ISP router
+* OpenWRT provides DHCP and edge routing
 * OPNsense is used for internal firewalling and segmentation
-* Consumer devices (e.g., Nvidia Shield) are intentionally isolated from the lab environment
+* Consumer devices (e.g., Nvidia Shield) are intentionally isolated from lab infrastructure
 
 ---
 
@@ -94,23 +96,18 @@ An attempt was made to remove the ISP router by cloning its MAC address.
 Actions:
 
 * Identified the ISP router MAC address
-* Configured OpenWRT to spoof the same MAC
-* Attempted direct connection to ISP
+* Configured OpenWRT to spoof the MAC
+* Attempted direct ISP connection
 
 Outcome:
 
 * Connection failed
-* ISP restrictions extended beyond MAC authentication
+* ISP restrictions extend beyond MAC authentication
 
 Conclusion:
 
 * ISP enforces additional provisioning controls
-* Direct replacement of ISP hardware is not feasible
-
-Final decision:
-
-* Retain ISP router as entry point
-* Use OpenWRT as controlled edge layer
+* ISP router must remain in place
 
 ---
 
@@ -118,9 +115,7 @@ Final decision:
 
 ### Phase 1 — Legacy Deployment & Constraints
 
-Initial setup used repurposed hardware:
-
-* Proxmox host (i7-4790K, 32GB RAM)
+* Repurposed hardware (i7-4790K, 32GB RAM)
 * Separate storage system
 
 Issues:
@@ -128,8 +123,7 @@ Issues:
 * High power consumption
 * Excessive heat
 * Loud fan noise
-* Inefficient continuous operation
-* Storage fragmentation
+* Fragmented storage
 
 ---
 
@@ -137,19 +131,14 @@ Issues:
 
 Actions:
 
-* Cleaned hardware and removed dust
+* Cleaned dust and debris
 * Reapplied thermal paste
 * Reconfigured airflow
-
-Root cause:
-
-* Turbulent airflow causing heat recirculation
 
 Outcome:
 
 * Reduced temperature
 * Improved stability
-* Lower noise
 
 **Insight:** More fans ≠ better cooling
 
@@ -160,23 +149,22 @@ Outcome:
 Problem:
 
 * Data spread across multiple drives
-* Duplicate files and no central control
+* Duplicate files
 
 Solution:
 
-* Deployed TrueNAS SCALE on dedicated NAS
+* Deployed TrueNAS SCALE
 
 Actions:
 
 * Backed up system using Rescuezilla
-* Verified backup integrity
-* Restored into ZFS datasets
+* Verified backups
+* Restored into ZFS
 
 Outcome:
 
 * Centralized storage
-* Data integrity via ZFS
-* Snapshot capability
+* Data integrity and snapshots
 
 ---
 
@@ -186,22 +174,14 @@ Progression:
 
 * DD-WRT → OpenWRT → OPNsense
 
-Final structure:
+Final roles:
 
-* OpenWRT = edge routing + DHCP
-* OPNsense = internal firewall
-
-Outcome:
-
-* Controlled traffic flow
-* Improved network visibility
-* Flexible design
+* OpenWRT → DHCP + edge routing
+* OPNsense → internal firewall
 
 ---
 
 ### Phase 5 — Virtualized Network Services
-
-Deployed via Proxmox:
 
 * OPNsense (firewall VM)
 * Pi-hole (DNS filtering VM)
@@ -209,16 +189,11 @@ Deployed via Proxmox:
 Outcome:
 
 * Service isolation
-* Snapshot/rollback capability
-* Easier testing
+* Snapshot and rollback capability
 
 ---
 
 ### Phase 6 — Hardware Modernization
-
-Problem:
-
-* Legacy systems inefficient
 
 Upgrade:
 
@@ -227,8 +202,8 @@ Upgrade:
 
 Outcome:
 
-* Reduced power usage
-* Lower heat and noise
+* Lower power consumption
+* Reduced heat and noise
 * Stable 24/7 operation
 
 ---
@@ -241,66 +216,48 @@ Deployed:
 
 Configured:
 
+* Domain services
 * DNS records
-* DHCP integration
-* Internal name resolution
-
-Challenges resolved:
-
-* systemd-resolved conflicts
-* DNS misconfiguration
+* Client integration
 
 Outcome:
 
 * Centralized identity
-* Functional DNS
+* Functional internal DNS
 
 ---
 
 ### Phase 8 — Real-World Deployment
 
 * Reclaimed ~13 systems
-* Removed legacy domain configs
-* Reimaged with Linux
+* Reimaged and redeployed
 
 Use:
 
 * Student computing
-* Scratch programming
 
 Outcome:
 
-* Real systems supporting real users
-* Hands-on support experience
+* Real users supported
+* Practical troubleshooting experience
 
 ---
 
 ### Phase 9 — Deployment Strategy
 
-Goal:
+Attempted:
 
-* PXE-based deployment
+* PXE deployment
 
-Challenge:
+Final solution:
 
-* Complexity vs time
-
-Solution:
-
-* Parallel USB deployment
-
-Outcome:
-
-* Faster execution
-* Reliable rollout
+* Parallel USB imaging
 
 **Insight:** Execution > ideal automation
 
 ---
 
 ## Operations & Support Experience
-
-Ongoing responsibilities:
 
 * User provisioning (Active Directory)
 * DNS troubleshooting
@@ -310,9 +267,9 @@ Ongoing responsibilities:
 
 Common issues resolved:
 
-* DNS failures
+* DNS misconfiguration
 * Group policy inconsistencies
-* Network communication issues
+* Network communication failures
 * File permission conflicts
 
 ---
@@ -322,8 +279,7 @@ Common issues resolved:
 ### Infrastructure
 
 * Thermal optimization
-* Airflow design
-* Hardware evaluation
+* Hardware efficiency evaluation
 
 ### Virtualization
 
@@ -334,7 +290,7 @@ Common issues resolved:
 ### Storage
 
 * TrueNAS deployment
-* ZFS datasets and snapshots
+* ZFS management
 * Backup and recovery
 
 ### Windows
@@ -351,13 +307,12 @@ Common issues resolved:
 
 * OpenWRT routing
 * OPNsense firewall configuration
-* DNS troubleshooting
+* DNS flow design
 
 ### Deployment
 
 * OS imaging
 * Multi-system rollout
-* PXE concepts
 
 ---
 
@@ -366,20 +321,19 @@ Common issues resolved:
 * Infrastructure must match workload
 * Legacy hardware has hidden costs
 * Centralized storage is critical
-* Thermal and power constraints matter
+* DNS design must align with Active Directory
 * Backup validation is essential
-* Practical execution beats ideal design
+* Practical execution often outweighs ideal design
 
 ---
 
 ## Future Improvements
 
-* VLAN segmentation
-* Consolidate DHCP into OPNsense
+* VLAN segmentation and isolation
+* Consolidate routing/DHCP into OPNsense
 * VPN deployment
 * IDS/IPS integration
-* Monitoring/logging
-* Domain-joined clients
+* Monitoring and logging systems
 
 ---
 
