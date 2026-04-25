@@ -3,6 +3,15 @@
 ## From Constraint-Driven Design to Enterprise-Style Administration
 
 ---
+<p align="center">
+  <img src="./images/Network-home.png" width="600"/>
+</p>
+
+<h1 align="center">Eladio Rivera</h1>
+
+<p align="center">
+  Homelab Infrastructure
+</p>
 
 ## Overview
 
