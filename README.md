@@ -38,26 +38,25 @@ The current environment includes:
 
 ## Network Architecture
 
-
 ```mermaid
 flowchart TD
-    Internet[Internet] --> ISP[ISP Router]
+    Internet["Internet"] --> ISP["ISP Router"]
 
-    ISP --> Shield[Nvidia Shield]
-    ISP --> Firewall[Firewall Appliance - OPNsense VM]
+    ISP --> Shield["Nvidia Shield"]
+    ISP --> Firewall["Firewall Appliance - OPNsense VM"]
 
-    Firewall --> Switch[Cisco SG200-08 Managed Switch]
+    Firewall --> Switch["Cisco SG200-08 Managed Switch"]
 
-    Switch --> Proxmox[Proxmox Host - Minisforum MS-A2]
-    Switch --> TrueNAS[TrueNAS SCALE - UGREEN DXP4800 Pro]
-    Switch --> MediaNAS[Media NAS - UGREEN DXP4800]
-    Switch --> Clients[Client Devices]
+    Switch --> Proxmox["Proxmox Host - Minisforum MS-A2"]
+    Switch --> TrueNAS["TrueNAS SCALE - UGREEN DXP4800 Pro"]
+    Switch --> MediaNAS["Media NAS - UGREEN DXP4800"]
+    Switch --> Clients["Client Devices"]
 
-    Proxmox --> DC01[Windows Server 2022 - AD DNS]
-    Proxmox --> UbuntuServer[Ubuntu Server]
-    Proxmox --> UbuntuDesktop[Ubuntu Desktop]
-    Proxmox --> Win10[Windows 10 Client]
-    Proxmox --> PiHole[Pi-hole DNS]
+    Proxmox --> DC01["Windows Server 2022 - AD DNS"]
+    Proxmox --> UbuntuServer["Ubuntu Server"]
+    Proxmox --> UbuntuDesktop["Ubuntu Desktop"]
+    Proxmox --> Win10["Windows 10 Client"]
+    Proxmox --> PiHole["Pi-hole DNS"]
 
 ---
 
