@@ -1,314 +1,346 @@
-# 🖥️ Homelab Infrastructure Evolution  
-## From Legacy Hardware to Constraint-Driven Enterprise Design
+# Enterprise-Style Virtualized Infrastructure Lab
+
+## Constraint-Driven System Design & Real-World Deployment
+
+---
 
 ## Overview
 
-This project documents the full evolution of my homelab environment, starting from repurposed legacy systems and progressing into a modern, virtualized, enterprise-style infrastructure.
+This project documents the evolution of a self-built IT environment designed to simulate a small enterprise network supporting real users.
 
-This was not built from a tutorial. It evolved through real-world constraints:
+The infrastructure evolved through solving real operational constraints:
 
-- power consumption  
-- heat and airflow inefficiencies  
-- noise  
-- hardware limitations  
-- storage sprawl  
-- deployment challenges  
-- DNS and networking complexity  
+* Power consumption
+* Thermal inefficiency
+* Noise and environmental limitations
+* Storage fragmentation
+* Networking and DNS complexity
+* Deployment challenges
 
-The lab simulates a small enterprise environment using:
+The current environment includes:
 
-- Proxmox virtualization  
-- TrueNAS SCALE (ZFS storage)  
-- Windows Server Active Directory + DNS  
-- Ubuntu Server (Linux administration)  
-- OPNsense firewall  
-- Pi-hole DNS filtering  
-- Managed switching  
-- Real-world system deployment  
+* Proxmox virtualization
+* TrueNAS SCALE (ZFS storage)
+* Windows Server 2022 (Active Directory + DNS)
+* Ubuntu Server / Desktop
+* OPNsense firewall
+* Pi-hole DNS filtering
+* Managed switching
+* Real-world system deployment (~13 users)
 
 ---
 
 ## Engineering Approach
 
-Problem → Investigation → Root Cause → Redesign → Outcome  
-
-Every phase in this lab follows this pattern.
+**Problem → Investigation → Root Cause → Redesign → Outcome**
 
 ---
 
-## Current Architecture
+## Network Architecture
 
 ```mermaid
 flowchart TD
     Internet[Internet] --> ISP[ISP Router]
+
     ISP --> Shield[Nvidia Shield]
-    ISP --> Firewall[Firewall Appliance<br>OPNsense / Proxmox / Pi-hole]
+    ISP --> Firewall[Firewall Appliance (OPNsense VM)]
 
     Firewall --> Switch[Cisco SG200-08 Managed Switch]
 
-    Switch --> Proxmox[Proxmox Host<br>Minisforum MS-A2]
-    Switch --> TrueNAS[TrueNAS SCALE<br>UGREEN DXP4800 Pro]
-    Switch --> MediaNAS[Media NAS<br>UGREEN DXP4800]
+    Switch --> Proxmox[Proxmox Host (Minisforum MS-A2)]
+    Switch --> TrueNAS[TrueNAS SCALE (UGREEN DXP4800 Pro)]
+    Switch --> MediaNAS[Media NAS (UGREEN DXP4800)]
     Switch --> Clients[Client Devices]
 
-    Proxmox --> DC01[Windows Server 2022<br>DC01 / AD / DNS]
+    Proxmox --> DC01[Windows Server 2022 (AD/DNS)]
     Proxmox --> UbuntuServer[Ubuntu Server]
     Proxmox --> UbuntuDesktop[Ubuntu Desktop]
     Proxmox --> Win10[Windows 10 Client]
-    Proxmox --> PiHole[Pi-hole]
+    Proxmox --> PiHole[Pi-hole DNS]
+```
 
+---
 
-Phase 1 — Dual Legacy Systems
+## Infrastructure Evolution
 
-The lab began with two separate legacy systems:
+### Phase 1 — Legacy Deployment & Initial Constraints
 
-Proxmox host (i7-4790K, 32GB RAM, GTX 970)
-Separate storage/NAS system
+Initial setup used repurposed hardware:
 
-Actions taken:
+* Proxmox host (i7-4790K, 32GB RAM)
+* Separate NAS system
 
-Converted desktops into server roles
-Removed GTX 970 GPU to reduce heat and power
-Ran systems headless
+Key issues:
 
-Problems discovered:
+* High power consumption
+* Excessive heat
+* Loud fan noise
+* Inefficient 24/7 operation
+* Storage fragmented across multiple devices
 
-High power consumption
-Excessive heat
-Loud fan noise
-Inefficient 24/7 operation
-Storage scattered across multiple machines
-Phase 1A — Thermal Optimization
-Cleaned systems using air blower
-Removed dust from fans, heatsinks, and components
-Reapplied CPU thermal paste
+---
 
-Outcome:
-
-Lower temperatures
-Improved stability
-Phase 1B — Airflow Redesign
-
-Original configuration:
-
-2 intake fans
-2 exhaust fans
-1 large top fan
-
-Problem:
-
-High temperatures despite many fans
-
-Root cause:
-
-Turbulence
-No directional airflow
-Heat recirculation
-
-Outcome:
-
-Simplified airflow
-Reduced noise
-Improved cooling efficiency
-
-Key insight:
-
-More fans ≠ better cooling
-
-Phase 2 — Storage Consolidation (UGREEN NAS)
-
-Problem:
-
-HDDs scattered across systems
-No centralized storage
-
-Solution:
-
-Purchased UGREEN DXP4800 Pro
+### Phase 2 — Thermal & Airflow Optimization
 
 Actions:
 
-Backed up original OS using Rescuezilla
-Verified disk image
-Installed TrueNAS SCALE
+* Cleaned hardware and removed dust buildup
+* Reapplied thermal paste
+* Reconfigured airflow
+
+Root cause identified:
+
+* Turbulent airflow causing heat recirculation
 
 Outcome:
 
-Centralized storage
-ZFS datasets and snapshots
-Organized data management
-Phase 3 — Router Evolution
-Started with DD-WRT
-Transitioned to OpenWRT
+* Lower temperatures
+* Improved stability
+* Reduced noise
 
-Insight:
+**Key insight:** More fans ≠ better cooling
 
-OpenWRT provides deeper control, package management, and flexibility.
+---
 
-Phase 4 — Firewall Architecture
-
-Hardware:
-
-Intel N150 appliance
-4x NICs
-
-Software:
-
-Tested pfSense
-Transitioned to OPNsense
-
-Skills learned:
-
-interface mapping
-routing
-firewall rules
-Phase 5 — Virtualized Network Services
-
-Instead of running firewall and DNS directly on hardware:
-
-Installed Proxmox on firewall appliance
-Virtualized OPNsense and Pi-hole
-
-Outcome:
-
-Service isolation
-Snapshots and rollback
-Flexible architecture
-Phase 6 — Modern Hardware Upgrade
+### Phase 3 — Storage Consolidation (TrueNAS)
 
 Problem:
 
-Legacy systems inefficient
+* No centralized storage
+* Duplicate data across drives
+
+Solution:
+
+* Deployed TrueNAS SCALE on UGREEN NAS
+
+Actions:
+
+* Backed up system using Rescuezilla
+* Verified disk images before migration
+* Restored data into ZFS datasets
+
+Outcome:
+
+* Single source of truth
+* Improved data integrity
+* Snapshot capability
+
+---
+
+### Phase 4 — Firewall & Network Evolution
+
+Progression:
+
+* DD-WRT → OpenWRT → OPNsense
+
+Final architecture:
+
+* Dedicated firewall appliance (multi-NIC)
+* OPNsense virtualized under Proxmox
+
+Skills developed:
+
+* Interface mapping
+* Routing
+* Firewall rule design
+
+Outcome:
+
+* Controlled network traffic
+* Improved visibility and flexibility
+
+---
+
+### Phase 5 — Virtualized Services
+
+Shifted from hardware-based services to virtualization:
+
+* OPNsense (firewall VM)
+* Pi-hole (DNS filtering VM)
+
+Outcome:
+
+* Service isolation
+* Snapshot and rollback capability
+* Increased flexibility
+
+---
+
+### Phase 6 — Hardware Migration & Modernization
+
+Problem:
+
+* Legacy systems inefficient for continuous operation
 
 Upgrade:
 
-Minisforum MS-A2
-32GB DDR5
-NVMe storage
+* Minisforum mini PC (Proxmox host)
+* NVMe storage
 
 Outcome:
 
-Lower power consumption
-Less heat and noise
-Stable 24/7 operation
-Phase 7 — Active Directory & DNS
+* Reduced power consumption
+* Lower heat and noise
+* Stable 24/7 environment
 
-Setup:
+---
 
-Windows Server 2022
-Domain: lab.local
-DNS: 192.168.1.20
+### Phase 7 — Active Directory & Internal DNS
 
-Work:
+Deployed:
 
-Created DNS records
-Configured DHCP to use AD DNS
-Troubleshot systemd-resolved
+* Windows Server 2022 (lab.local domain)
+
+Configured:
+
+* DNS records
+* DHCP integration
+* Client resolution via AD DNS
+
+Challenges resolved:
+
+* systemd-resolved conflicts
+* DNS misconfiguration
 
 Outcome:
 
-Functional internal DNS
-Centralized identity
-Phase 8 — Real-World Deployment (School Systems)
-Reclaimed ~13 decommissioned computers
-Removed from legacy Active Directory
-Wiped hard drives
-Installed Zorin OS
+* Functional internal DNS
+* Centralized authentication
+
+---
+
+### Phase 8 — Real-World Deployment
+
+* Reclaimed ~13 decommissioned systems
+* Removed legacy domain configurations
+* Reimaged using Linux (Zorin OS)
 
 Used for:
 
-Scratch programming
-student computing
+* Student computing
+* Scratch programming
 
 Outcome:
 
-Real systems deployed to real users
-Phase 9 — PXE Deployment Attempt
+* Real systems deployed to real users
+* Practical support experience
+
+---
+
+### Phase 9 — Deployment Strategy (PXE vs Manual)
 
 Goal:
 
-Deploy OS over network
+* Automate OS deployment via PXE
 
-Actions:
+Challenges:
 
-Built Ubuntu PXE server
-Configured DHCP and TFTP
+* Configuration complexity
+* Time constraints
 
-Problem:
+Final solution:
 
-PXE complexity
-Time constraints
-
-Solution:
-
-Created 4 USB installers with Balena Etcher
-Deployed systems in parallel
+* Parallel USB deployment (Balena Etcher)
 
 Outcome:
 
-Successful deployment
+* Faster execution
+* Successful rollout
 
-Key insight:
+**Key insight:** Execution > ideal automation
 
-Execution matters more than perfect automation
+---
 
-Skills Demonstrated
+## Operations & Support Experience
 
-Hardware:
+This environment required ongoing management:
 
-thermal optimization
-airflow design
-GPU removal
+* User account provisioning (Active Directory)
+* DNS troubleshooting
+* VM performance management
+* Storage access control
+* Firewall and routing diagnostics
 
-Virtualization:
+Common issues resolved:
 
-Proxmox
-VM management
-snapshots
+* DNS failures
+* Group policy inconsistencies
+* Network communication issues
+* File permission conflicts
 
-Storage:
+---
 
-TrueNAS
-ZFS
-disk imaging
+## Skills Demonstrated
 
-Windows:
+### Infrastructure & Hardware
 
-Active Directory
-DNS
+* Thermal optimization
+* Airflow design
+* Hardware efficiency evaluation
 
-Linux:
+### Virtualization
 
-Ubuntu Server
-SSH
+* Proxmox management
+* VM lifecycle control
+* Snapshot and rollback
 
-Networking:
+### Storage
 
-OpenWRT
-firewall configuration
-DNS troubleshooting
+* TrueNAS deployment
+* ZFS datasets and snapshots
+* Backup and recovery
 
-Deployment:
+### Windows Systems
 
-PXE concepts
-USB imaging
-real user systems
-Next Steps
-VLAN segmentation
-VPN deployment
-IDS/IPS
-monitoring/logging
-domain-joined clients
-Summary
+* Active Directory
+* DNS configuration
 
-This homelab represents a full infrastructure evolution:
+### Linux
 
-legacy hardware → optimized systems
-scattered storage → centralized NAS
-consumer networking → firewall architecture
-manual installs → deployment strategy
+* Ubuntu Server
+* SSH administration
 
-It demonstrates real IT thinking:
+### Networking
 
-identify problems → redesign systems → deliver working solutions
+* Firewall configuration (OPNsense)
+* Routing and DNS troubleshooting
 
+### Deployment
+
+* PXE concepts
+* OS imaging
+* Multi-system rollout
+
+---
+
+## Key Lessons Learned
+
+* Infrastructure must match workload requirements
+* Legacy hardware introduces hidden operational costs
+* Centralized storage is critical for data integrity
+* Thermal and power constraints directly impact system design
+* Backup validation is essential before system changes
+* Practical execution often outweighs ideal design
+
+---
+
+## Future Improvements
+
+* VLAN segmentation and traffic isolation
+* VPN deployment
+* IDS/IPS integration
+* Monitoring and logging systems
+* Domain-joined client expansion
+
+---
+
+## Summary
+
+This project represents a full infrastructure lifecycle:
+
+* Legacy hardware → optimized systems
+* Scattered storage → centralized architecture
+* Consumer networking → controlled firewall design
+* Manual deployment → structured rollout strategy
+
+**Identify problems → redesign systems → deliver working solutions**
