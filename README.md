@@ -1,30 +1,30 @@
-# Enterprise-Style Virtualized Infrastructure Lab
+# Homelab Infrastructure Evolution
 
-## Constraint-Driven System Design & Real-World Deployment
+## From Constraint-Driven Design to Enterprise-Style Administration
 
 ---
 
 ## Overview
 
-This project documents the evolution of a self-built IT environment designed to simulate a small enterprise network supporting real users.
+This project documents the evolution of a self-built IT environment supporting real users and services.
 
-The infrastructure was developed by solving real-world constraints rather than following a predefined design:
+The infrastructure was not designed upfront—it evolved through solving real-world constraints:
 
 * ISP router locked to a MAC address
-* High power consumption and thermal inefficiency from legacy hardware
+* High power consumption and thermal inefficiency
 * Storage fragmentation and duplication
 * Networking and DNS complexity
 * Real-world deployment and support challenges
 
-The current environment supports ~13 active users and includes:
+The current environment supports ~13 active systems and includes:
 
 * Proxmox virtualization (multiple hosts)
 * TrueNAS SCALE (ZFS storage)
 * Windows Server 2022 (Active Directory + DNS)
 * Ubuntu Server / Desktop
-* OPNsense firewall (virtualized)
-* Pi-hole DNS filtering
-* OpenWRT edge router
+* OPNsense (internal firewall)
+* Pi-hole (DNS filtering)
+* OpenWRT (edge router + DHCP)
 * Managed switching
 * Wireless Access Point (OpenWRT)
 
@@ -38,7 +38,7 @@ All development followed a consistent pattern:
 
 ---
 
-## Network Architecture
+## Current Transitional Architecture
 
 ```mermaid
 flowchart TD
@@ -76,75 +76,75 @@ flowchart TD
 
 ---
 
-## Edge Design Constraint
+## Network Architecture Note
 
-The ISP-provided router is locked to a MAC address and cannot be replaced.
+This network is intentionally **transitional**, not fully optimized.
 
-To regain control over the network:
+Key constraints:
 
-* OpenWRT was deployed behind the ISP router
-* OpenWRT provides DHCP and edge routing
-* OPNsense is used for internal firewalling and segmentation
-* Consumer devices (e.g., Nvidia Shield) are intentionally isolated from lab infrastructure
+* The ISP router cannot be removed due to MAC-level provisioning
+* OpenWRT is used to regain control over routing and DHCP
+* OPNsense operates as an internal firewall rather than the primary edge firewall
+* Pi-hole provides DNS filtering, while Active Directory DNS remains authoritative for the domain
+
+This results in overlapping responsibilities that are functional but not ideal.
+
+Planned improvement:
+
+* Consolidate routing, DHCP, and firewall control into OPNsense
+* Simplify the network control plane
+* Introduce VLAN-based segmentation
 
 ---
 
 ## Attempted MAC Address Bypass
 
-An attempt was made to remove the ISP router by cloning its MAC address.
+An attempt was made to eliminate the ISP router:
 
-Actions:
+* Cloned ISP router MAC address onto OpenWRT
+* Attempted direct connection to ISP
 
-* Identified the ISP router MAC address
-* Configured OpenWRT to spoof the MAC
-* Attempted direct ISP connection
-
-Outcome:
+Result:
 
 * Connection failed
-* ISP restrictions extend beyond MAC authentication
+* ISP enforces additional provisioning controls beyond MAC
 
 Conclusion:
 
-* ISP enforces additional provisioning controls
 * ISP router must remain in place
 
 ---
 
 ## Infrastructure Evolution
 
-### Phase 1 — Legacy Deployment & Constraints
+### Phase 1 — Legacy Deployment
 
-* Repurposed hardware (i7-4790K, 32GB RAM)
+* Repurposed desktop hardware (i7-4790K, 32GB RAM)
 * Separate storage system
 
-Issues:
+Problems:
 
 * High power consumption
-* Excessive heat
-* Loud fan noise
+* Excessive heat and noise
 * Fragmented storage
 
 ---
 
-### Phase 2 — Thermal & Airflow Optimization
+### Phase 2 — Thermal Optimization
 
-Actions:
-
-* Cleaned dust and debris
+* Cleaned dust and components
 * Reapplied thermal paste
-* Reconfigured airflow
+* Reworked airflow
 
 Outcome:
 
-* Reduced temperature
-* Improved stability
+* Improved cooling and stability
 
 **Insight:** More fans ≠ better cooling
 
 ---
 
-### Phase 3 — Storage Consolidation (TrueNAS)
+### Phase 3 — Storage Consolidation
 
 Problem:
 
@@ -155,20 +155,14 @@ Solution:
 
 * Deployed TrueNAS SCALE
 
-Actions:
-
-* Backed up system using Rescuezilla
-* Verified backups
-* Restored into ZFS
-
 Outcome:
 
 * Centralized storage
-* Data integrity and snapshots
+* ZFS snapshots and integrity
 
 ---
 
-### Phase 4 — Network & Firewall Evolution
+### Phase 4 — Network Evolution
 
 Progression:
 
@@ -181,7 +175,7 @@ Final roles:
 
 ---
 
-### Phase 5 — Virtualized Network Services
+### Phase 5 — Virtualized Services
 
 * OPNsense (firewall VM)
 * Pi-hole (DNS filtering VM)
@@ -195,42 +189,32 @@ Outcome:
 
 ### Phase 6 — Hardware Modernization
 
-Upgrade:
-
-* Minisforum Proxmox host
+* Migrated to Minisforum host
 * NVMe storage
 
 Outcome:
 
-* Lower power consumption
+* Lower power usage
 * Reduced heat and noise
 * Stable 24/7 operation
 
 ---
 
-### Phase 7 — Active Directory & DNS
+### Phase 7 — Active Directory
 
-Deployed:
-
-* Windows Server 2022 (lab.local)
-
-Configured:
-
-* Domain services
-* DNS records
-* Client integration
+* Deployed Windows Server 2022 (lab.local)
+* Configured domain services and DNS
 
 Outcome:
 
-* Centralized identity
-* Functional internal DNS
+* Centralized identity management
 
 ---
 
 ### Phase 8 — Real-World Deployment
 
 * Reclaimed ~13 systems
-* Reimaged and redeployed
+* Reimaged and deployed
 
 Use:
 
@@ -245,13 +229,13 @@ Outcome:
 
 ### Phase 9 — Deployment Strategy
 
-Attempted:
+Attempt:
 
 * PXE deployment
 
 Final solution:
 
-* Parallel USB imaging
+* Parallel USB deployment
 
 **Insight:** Execution > ideal automation
 
@@ -260,16 +244,16 @@ Final solution:
 ## Operations & Support Experience
 
 * User provisioning (Active Directory)
-* DNS troubleshooting
+* DNS troubleshooting (Pi-hole + AD integration)
 * VM resource management
-* Storage access control
-* Firewall and routing diagnostics
+* Storage permissions and access control
+* Network and firewall diagnostics
 
 Common issues resolved:
 
 * DNS misconfiguration
 * Group policy inconsistencies
-* Network communication failures
+* Connectivity issues
 * File permission conflicts
 
 ---
@@ -279,7 +263,7 @@ Common issues resolved:
 ### Infrastructure
 
 * Thermal optimization
-* Hardware efficiency evaluation
+* Hardware evaluation
 
 ### Virtualization
 
@@ -318,22 +302,22 @@ Common issues resolved:
 
 ## Key Lessons Learned
 
-* Infrastructure must match workload
-* Legacy hardware has hidden costs
+* Real systems evolve under constraints
+* Legacy hardware introduces hidden costs
 * Centralized storage is critical
 * DNS design must align with Active Directory
-* Backup validation is essential
-* Practical execution often outweighs ideal design
+* Infrastructure simplicity improves reliability
+* Execution matters more than ideal design
 
 ---
 
 ## Future Improvements
 
-* VLAN segmentation and isolation
-* Consolidate routing/DHCP into OPNsense
+* VLAN segmentation
+* Consolidate DHCP and routing into OPNsense
 * VPN deployment
 * IDS/IPS integration
-* Monitoring and logging systems
+* Monitoring and logging
 
 ---
 
@@ -343,7 +327,7 @@ This project represents a full infrastructure lifecycle:
 
 * Legacy hardware → optimized systems
 * Fragmented storage → centralized architecture
-* Consumer networking → controlled infrastructure design
+* Mixed networking → controlled infrastructure design
 * Manual deployment → structured rollout
 
 **Identify problems → redesign systems → deliver working solutions**
