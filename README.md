@@ -53,14 +53,21 @@ flowchart TD
 
     OPNsense --> Switch["Cisco SG200-08 Managed Switch"]
 
-    Switch --> Proxmox["Main Proxmox Host - Minisforum"]
-    Switch --> TrueNAS["TrueNAS SCALE - Primary Storage"]
+    Switch --> Proxmox["Main Proxmox Host (Minisforum)"]
+    Switch --> TrueNAS["TrueNAS SCALE (Primary Storage)"]
     Switch --> MediaNAS["Media NAS"]
     Switch --> AP["Wireless Access Point (OpenWRT)"]
     Switch --> Clients["Wired Clients"]
 
     AP --> WiFiClients["Wireless Clients"]
 
+    %% Your VMs (THIS is what you wanted)
+    Proxmox --> DC01["Windows Server 2022 - AD DNS"]
+    Proxmox --> UbuntuServer["Ubuntu Server"]
+    Proxmox --> UbuntuDesktop["Ubuntu Desktop"]
+    Proxmox --> Win10["Windows 10 Client"]
+
+    %% Network services
     Clients -->|DHCP| OpenWRT
     Clients -->|DNS| PiHole
 ```
