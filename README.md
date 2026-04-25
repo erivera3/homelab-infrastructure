@@ -38,14 +38,12 @@ The current environment includes:
 
 ## Network Architecture
 
-## Network Architecture
-
 ```mermaid
 flowchart TD
-    Internet["Internet"] --> ISP["ISP Router"] --> Opnwrt["Opnwrt Router']
+    Internet["Internet"] --> ISP["ISP Router"] --> OpenWRT["OpenWRT Router"]
 
-    Opnwrt --> Shield["Nvidia Shield"]
-    Opnwrt --> Firewall["Firewall Appliance - OPNsense VM"]
+    OpenWRT --> Shield["Nvidia Shield"]
+    OpenWRT --> Firewall["Firewall Appliance - OPNsense VM"]
 
     Firewall --> Switch["Cisco SG200-08 Managed Switch"]
     Firewall --> PiHole["Pi-hole DNS"]
