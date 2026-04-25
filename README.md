@@ -53,7 +53,7 @@ flowchart TD
     F --> L["Ubuntu Desktop"]
     F --> M["Windows 10 Client"]
     F --> N["Pi-hole DNS"]
-
+```
 ---
 
 ## Infrastructure Evolution
