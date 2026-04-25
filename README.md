@@ -4,10 +4,9 @@
 
 ---
 <p align="center">
-  <img src="./images/Network-home.png" width="80%"/>
+  <img src="./images/Network-home.png" length="80%"/>
 </p>
 
-<h1 align="center">Eladio Rivera</h1>
 
 <p align="center">
   Homelab Infrastructure
