@@ -10,6 +10,374 @@ This project documents the evolution of a self-built IT environment designed to 
 
 The infrastructure evolved through solving real operational constraints:
 
+* ISP hardware limitations (MAC-locked router)
+* Power consumption and thermal inefficiency
+* Noise and environmental constraints
+* Storage fragmentation and duplication
+* Networking and DNS complexity
+* Real-world deployment challenges
+
+The current environment includes:
+
+* Proxmox virtualization (multiple hosts)
+* TrueNAS SCALE (ZFS storage)
+* Windows Server 2022 (Active Directory + DNS)
+* Ubuntu Server / Desktop
+* OPNsense firewall (virtualized)
+* Pi-hole DNS filtering (virtualized)
+* OpenWRT edge router
+* Managed switching
+* Wireless Access Point (OpenWRT)
+* Real-world system deployment (~13 users)
+
+---
+
+## Engineering Approach
+
+All development followed a consistent pattern:
+
+**Problem → Investigation → Root Cause → Redesign → Outcome**
+
+---
+
+## Network Architecture
+
+```mermaid
+flowchart TD
+    Internet["Internet"] --> ISP["ISP Router (MAC Locked)"]
+    ISP --> OpenWRT["OpenWRT (Edge Router + DHCP)"]
+
+    OpenWRT --> Shield["Nvidia Shield (Isolated)"]
+    OpenWRT --> N110["N110 Proxmox Host"]
+
+    N110 --> OPNsense["OPNsense VM (Internal Firewall)"]
+    N110 --> PiHole["Pi-hole VM (DNS Filtering)"]
+
+    OPNsense --> Switch["Cisco SG200-08 Managed Switch"]
+
+    Switch --> Proxmox["Main Proxmox Host - Minisforum"]
+    Switch --> TrueNAS["TrueNAS SCALE - Primary Storage"]
+    Switch --> MediaNAS["Media NAS"]
+    Switch --> AP["Wireless Access Point (OpenWRT)"]
+    Switch --> Clients["Wired Clients"]
+
+    AP --> WiFiClients["Wireless Clients"]
+
+    Clients -->|DHCP| OpenWRT
+    Clients -->|DNS| PiHole
+```
+
+---
+
+## Edge Design Constraint
+
+The ISP-provided router is locked to a MAC address and cannot be replaced.
+
+To regain control over the network, an OpenWRT router was introduced behind the ISP device:
+
+* **OpenWRT** handles:
+
+  * DHCP
+  * Edge routing
+* **OPNsense** handles:
+
+  * Internal firewalling
+  * Segmentation within the lab
+* Consumer devices (e.g., Nvidia Shield) are intentionally kept on OpenWRT to avoid disruption from lab changes
+
+---
+
+## Infrastructure Evolution
+
+### Phase 1 — Legacy Deployment & Constraints
+
+Initial setup used repurposed hardware:
+
+* Proxmox host (i7-4790K, 32GB RAM)
+* Separate storage system
+
+Issues identified:
+
+* High power consumption
+* Excessive heat
+* Loud fan noise
+* Inefficient 24/7 operation
+* Storage fragmentation
+
+---
+
+### Phase 2 — Thermal & Airflow Optimization
+
+Actions:
+
+* Cleaned components and removed dust buildup
+* Reapplied thermal paste
+* Reworked airflow design
+
+Root cause:
+
+* Turbulent airflow causing heat recirculation
+
+Outcome:
+
+* Lower temperatures
+* Improved system stability
+* Reduced noise
+
+**Insight:** More fans ≠ better cooling
+
+---
+
+### Phase 3 — Storage Consolidation (TrueNAS)
+
+Problem:
+
+* Data spread across multiple drives
+* Duplicate files and no source of truth
+
+Solution:
+
+* Deployed TrueNAS SCALE on dedicated NAS hardware
+
+Actions:
+
+* Backed up system using Rescuezilla
+* Verified backups before migration
+* Restored into ZFS datasets
+
+Outcome:
+
+* Centralized storage
+* Data integrity via ZFS
+* Snapshot capability
+
+---
+
+### Phase 4 — Network & Firewall Evolution
+
+Progression:
+
+* DD-WRT → OpenWRT → OPNsense
+
+Final structure:
+
+* OpenWRT = edge router + DHCP
+* OPNsense = internal firewall
+
+Outcome:
+
+* Controlled routing
+* Improved traffic visibility
+* Flexible network design
+
+---
+
+### Phase 5 — Virtualized Network Services
+
+Deployed via Proxmox:
+
+* OPNsense (firewall VM)
+* Pi-hole (DNS filtering VM)
+
+Outcome:
+
+* Service isolation
+* Snapshot and rollback capability
+* Easier testing and recovery
+
+---
+
+### Phase 6 — Hardware Modernization
+
+Problem:
+
+* Legacy systems inefficient and noisy
+
+Upgrade:
+
+* Minisforum Proxmox host
+* NVMe storage
+
+Outcome:
+
+* Lower power usage
+* Reduced heat and noise
+* Stable 24/7 operation
+
+---
+
+### Phase 7 — Active Directory & DNS
+
+Deployed:
+
+* Windows Server 2022 (lab.local)
+
+Configured:
+
+* DNS records
+* DHCP integration
+* Client resolution via internal DNS
+
+Challenges resolved:
+
+* systemd-resolved conflicts
+* DNS misconfiguration
+
+Outcome:
+
+* Centralized identity
+* Functional internal DNS
+
+---
+
+### Phase 8 — Real-World Deployment
+
+* Reclaimed ~13 decommissioned systems
+* Removed legacy domain configurations
+* Reimaged with Linux
+
+Use case:
+
+* Student computing
+* Scratch programming
+
+Outcome:
+
+* Real systems deployed to real users
+* Practical support experience
+
+---
+
+### Phase 9 — Deployment Strategy
+
+Goal:
+
+* Automate deployment via PXE
+
+Challenges:
+
+* Complexity vs time constraints
+
+Solution:
+
+* Parallel USB deployment (Balena Etcher)
+
+Outcome:
+
+* Faster rollout
+* Reliable execution
+
+**Insight:** Execution > ideal automation
+
+---
+
+## Operations & Support Experience
+
+This environment required ongoing management:
+
+* User provisioning (Active Directory)
+* DNS troubleshooting
+* VM resource management
+* Storage permissions and access control
+* Firewall and routing diagnostics
+
+Common issues resolved:
+
+* DNS failures
+* Group policy inconsistencies
+* VLAN/routing issues
+* File permission conflicts
+
+---
+
+## Skills Demonstrated
+
+### Infrastructure & Hardware
+
+* Thermal optimization
+* Airflow design
+* Hardware efficiency evaluation
+
+### Virtualization
+
+* Proxmox administration
+* VM lifecycle management
+* Snapshot and rollback
+
+### Storage
+
+* TrueNAS deployment
+* ZFS datasets and snapshots
+* Backup and recovery
+
+### Windows Systems
+
+* Active Directory
+* DNS configuration
+
+### Linux
+
+* Ubuntu Server
+* SSH administration
+
+### Networking
+
+* OpenWRT routing
+* OPNsense firewall configuration
+* DNS troubleshooting
+
+### Deployment
+
+* OS imaging
+* Multi-system rollout
+* PXE concepts
+
+---
+
+## Key Lessons Learned
+
+* Infrastructure must match workload requirements
+* Legacy hardware introduces hidden operational costs
+* Centralized storage is critical for data integrity
+* Thermal and power constraints impact system design
+* Backup validation is essential before migration
+* Practical execution often outweighs ideal design
+
+---
+
+## Future Improvements
+
+* VLAN segmentation and isolation
+* Consolidate DHCP and routing into OPNsense
+* VPN deployment
+* IDS/IPS integration
+* Monitoring and logging systems
+* Domain-joined client expansion
+
+---
+
+## Summary
+
+This project represents a full infrastructure lifecycle:
+
+* Legacy hardware → optimized systems
+* Scattered storage → centralized architecture
+* Consumer networking → controlled infrastructure design
+* Manual deployment → structured rollout strategy
+
+**Identify problems → redesign systems → deliver working solutions**
+# Enterprise-Style Virtualized Infrastructure Lab
+
+## Constraint-Driven System Design & Real-World Deployment
+
+---
+
+## Overview
+
+This project documents the evolution of a self-built IT environment designed to simulate a small enterprise network supporting real users.
+
+The infrastructure evolved through solving real operational constraints:
+
 * Power consumption
 * Thermal inefficiency
 * Noise and environmental limitations
