@@ -270,8 +270,18 @@ DNS conflict between filtering and Active Directory.
 
 ## Summary
 
-- Constraint → redesign → stability  
-- Fragmentation → control  
-- Lab → real operational system  
+This project demonstrates the ability to operate and stabilize real systems under constraints rather than ideal conditions.
+
+Key capabilities demonstrated:
+
+- Diagnosing and resolving infrastructure limitations (ISP restrictions, DNS conflicts, hardware inefficiencies)  
+- Making trade-offs between complexity and control in network and system design  
+- Deploying and supporting systems used by real users, not isolated lab environments  
+- Restoring functionality through iterative redesign rather than one-time configuration  
+
+This environment required continuous troubleshooting, decision-making, and adjustment across networking, virtualization, storage, and identity systems.
+
+**Result:**  
+Not just a working lab, but a maintained operational environment where failures were identified, decisions were made, and systems were brought back under control.
 
 **Identify problems → make decisions → restore functionality**
