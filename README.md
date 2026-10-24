@@ -1,8 +1,23 @@
-# Homelab Infrastructure Evolution
+# Homelab Infrastructure: Windows, Linux, Networking, and Storage
 
-## From Constraint-Driven Design to Operational Infrastructure
+**Project context:** Personal infrastructure project · includes systems used by real people
 
----
+I built and improved a personal environment around practical problems: old hardware running hot and loud, scattered files, ISP restrictions, and DNS dependencies. It grew to include about 13 active systems and support for real users.
+
+## At a glance
+
+- Used Proxmox for virtual machines, TrueNAS SCALE with ZFS for storage, and Windows Server 2022 for Active Directory and DNS.
+- Worked with OpenWRT, OPNsense, and Pi-hole while documenting a transitional network design.
+- Reused and migrated hardware, deployed client systems, and investigated DNS, connectivity, and permission issues.
+
+**Why it matters for IT support:** Shows hands-on troubleshooting, hardware judgment, user support, and willingness to document tradeoffs and unfinished work.
+
+**Scope:** This is personal infrastructure and deployment experience, not a paid enterprise systems administrator role. The architecture is transitional. VLAN segmentation, firewall consolidation, monitoring, and backup automation remain improvement goals.
+
+[Back to my portfolio](https://github.com/erivera3)
+
+<details>
+<summary><strong>Open the full walkthrough, screenshots, decisions, and lessons</strong></summary>
 
 ## Overview
 
@@ -29,7 +44,7 @@ The current environment includes:
 - Cisco SG200-08 managed switch
 - OpenWRT wireless access point
 
-This environment is actively used and maintained, not simulated.
+This personal environment includes active services and systems used by real people.
 
 ---
 
@@ -222,8 +237,8 @@ DNS conflict between filtering and Active Directory.
 
 ---
 
-### Phase 11 — Real-World Deployment
-**Problem:** Need real users, not just lab systems  
+### Phase 11 — Deployment for Real Users
+**Problem:** Systems were needed by real users  
 **Decision:** Deploy ~13 systems  
 **Result:** Real support and troubleshooting experience  
 
@@ -276,12 +291,14 @@ Key capabilities demonstrated:
 
 - Diagnosing and resolving infrastructure limitations (ISP restrictions, DNS conflicts, hardware inefficiencies)  
 - Making trade-offs between complexity and control in network and system design  
-- Deploying and supporting systems used by real users, not isolated lab environments  
+- Deploying and supporting systems used by real users, within this personal environment  
 - Restoring functionality through iterative redesign rather than one-time configuration  
 
 This environment required continuous troubleshooting, decision-making, and adjustment across networking, virtualization, storage, and identity systems.
 
 **Result:**  
-Not just a working lab, but a maintained operational environment where failures were identified, decisions were made, and systems were brought back under control.
+A working personal lab and a maintained operational environment where failures were identified, decisions were made, and systems were brought back under control.
 
 **Identify problems → make decisions → restore functionality**
+
+</details>
