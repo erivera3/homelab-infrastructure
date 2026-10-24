@@ -10,14 +10,14 @@ I built and improved a personal environment around practical problems: old hardw
 - Worked with OpenWRT, OPNsense, and Pi-hole while documenting a transitional network design.
 - Reused and migrated hardware, deployed client systems, and investigated DNS, connectivity, and permission issues.
 
-**Why it matters for IT support:** Shows hands-on troubleshooting, hardware judgment, user support, and willingness to document tradeoffs and unfinished work.
+**Skills applied:** Hardware troubleshooting, client deployment, virtualization, storage management, DNS diagnostics, and user support.
 
-**Scope:** This is personal infrastructure and deployment experience, not a paid enterprise systems administrator role. The architecture is transitional. VLAN segmentation, firewall consolidation, monitoring, and backup automation remain improvement goals.
+**Project status:** This personal environment uses a transitional architecture. Planned improvements include VLAN segmentation, firewall consolidation, monitoring, and backup automation.
 
 [Back to my portfolio](https://github.com/erivera3)
 
 <details>
-<summary><strong>Open the full walkthrough, screenshots, decisions, and lessons</strong></summary>
+<summary><strong>Walkthrough, screenshots, and troubleshooting notes</strong></summary>
 
 ## Overview
 
@@ -285,7 +285,7 @@ DNS conflict between filtering and Active Directory.
 
 ## Summary
 
-This project demonstrates the ability to operate and stabilize real systems under constraints rather than ideal conditions.
+I worked through hardware, storage, and network constraints to keep a personal environment usable and improve it over time.
 
 Key capabilities demonstrated:
 
